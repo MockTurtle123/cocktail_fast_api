@@ -75,7 +75,7 @@ def delete_cocktail(db: Session, cocktail_id: int):
 
 # PUT requests
 
-def update_cocktail(db: Session, cocktail_id: int, cocktail_data: schemas.CocktailUpdate):
+def update_cocktail(db: Session, cocktail_id: int, cocktail_data: schemas.CocktailBase):
     db_cocktail = db.get(models.Cocktail, cocktail_id)
     if not db_cocktail:
         raise HTTPException(status_code=404, detail=f'CocktailFull (id={cocktail_id}) not found')
@@ -84,6 +84,10 @@ def update_cocktail(db: Session, cocktail_id: int, cocktail_data: schemas.Cockta
     db_cocktail.glass = cocktail_data.glass
     db_cocktail.garnish = cocktail_data.garnish
     db_cocktail.preparation = cocktail_data.preparation
+
+    for item in db_cocktail.ingredients:
+        db.delete(item)
+        db.commit()
 
     for ingredient in cocktail_data.ingredients:
         db_ingredient = models.Ingredient(
@@ -104,11 +108,19 @@ def update_cocktail(db: Session, cocktail_id: int, cocktail_data: schemas.Cockta
 
 # PATCH requests
 
-# def patch_cocktail(db: Session, cocktail_id: int, cocktail: schemas.CocktailBase):
-#     db_cocktail = db.get(models.Cocktail, cocktail_id)
-#     if not db_cocktail:
-#         raise HTTPException(status_code=404, detail=f'CocktailFull (id={cocktail_id}) not found')
-#     if cocktail.glass:
-#         db_cocktail.glass = cocktail.glass
-#     if cocktail.glass:
-#         db_cocktail.glass = cocktail.glass
+
+def patch_cocktail(db: Session, cocktail_id: int, cocktail_data: schemas.CocktailBase):
+    db_cocktail = db.get(models.Cocktail, cocktail_id)
+    if not db_cocktail:
+        raise HTTPException(status_code=404, detail=f'CocktailFull (id={cocktail_id}) not found')
+
+    selected_fields = cocktail_data.model_dump(exclude_unset=True).items()
+    for field, value in selected_fields:
+        setattr(db_cocktail, field, value)
+
+    db.commit()
+    db.refresh(db_cocktail)
+
+    return {'message': f"Cocktail id={cocktail_id} updated successfully",
+            'updated info': selected_fields}
+

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 
 import crud
-from database import SessionLocal, engine
+from database import engine, get_db
 import models
 import schemas
 from sqlalchemy.orm import Session
@@ -11,14 +11,6 @@ app = FastAPI(
     title='CocktailFull Database API',
     description='Create, Read, Update and Delete Cocktails',
 )
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.get('/')
@@ -75,7 +67,13 @@ def delete_cocktail(cocktail_id: int, db: Session = Depends(get_db)):
 
 
 @app.put('/cocktail/{cocktail_id}')
-def update_cocktail(cocktail_id: int, cocktail: schemas.CocktailUpdate, db: Session = Depends(get_db)):
+def update_cocktail(cocktail_id: int, cocktail_data: schemas.CocktailBase, db: Session = Depends(get_db)):
     """Update every field in the cocktail with specified id."""
-    return crud.update_cocktail(db, cocktail_id, cocktail)
+    return crud.update_cocktail(db, cocktail_id, cocktail_data)
+
+
+@app.patch('/cocktail/{cocktail_id}')
+def patch_cocktail(cocktail_id: int, cocktail_data: schemas.CocktailBase, db: Session = Depends(get_db)):
+    """Update selected fields in the cocktail with specified id."""
+    return crud.patch_cocktail(db, cocktail_id, cocktail_data)
 

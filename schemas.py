@@ -31,7 +31,7 @@ class Ingredient(BaseModel):
 class CocktailBase(BaseModel):
 
     name: str
-    glass: Glass
+    glass: Glass | None = None
     garnish: str | None = None
     preparation: str | None = None
     ingredients: list[Ingredient] | None = None
@@ -53,13 +53,4 @@ class CocktailShort(BaseModel):
     name: str
 
 
-class CocktailUpdate(BaseModel):
 
-    name: str
-    glass: Glass
-    garnish: str | None = None
-    preparation: str | None = None
-    ingredients: list[Ingredient] | None = None
-
-    class Config:
-        orm_mode = True
