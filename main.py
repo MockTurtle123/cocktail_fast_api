@@ -72,3 +72,10 @@ def batch_create_cocktails(cocktails: list[schemas.CocktailBase], db: Session = 
 def delete_cocktail(cocktail_id: int, db: Session = Depends(get_db)):
     """Delete cocktail with specified id."""
     return crud.delete_cocktail(db, cocktail_id)
+
+
+@app.put('/cocktail/{cocktail_id}')
+def update_cocktail(cocktail_id: int, cocktail: schemas.CocktailUpdate, db: Session = Depends(get_db)):
+    """Update every field in the cocktail with specified id."""
+    return crud.update_cocktail(db, cocktail_id, cocktail)
+
