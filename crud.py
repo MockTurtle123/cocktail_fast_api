@@ -33,7 +33,7 @@ def get_cocktail_by_ingredient_name(db: Session, ingredient_name: str):
 
 # POST requests
 
-def batch_create_cocktails(db: Session, cocktails: list[schemas.Cocktail]):
+def batch_create_cocktails(db: Session, cocktails: list[schemas.CocktailBase]):
     created_cocktails = []
     for cocktail in cocktails:
         db_cocktail = models.Cocktail(
@@ -67,10 +67,10 @@ def batch_create_cocktails(db: Session, cocktails: list[schemas.Cocktail]):
 def delete_cocktail(db: Session, cocktail_id: int):
     db_cocktail = db.get(models.Cocktail, cocktail_id)
     if not db_cocktail:
-        raise HTTPException(status_code=404, detail=f'Cocktail (id={cocktail_id}) not found')
+        raise HTTPException(status_code=404, detail=f'CocktailFull (id={cocktail_id}) not found')
     db.delete(db_cocktail)
     db.commit()
-    return {'message': f'Cocktail (id={cocktail_id}) deleted successfully'}
+    return {'message': f'CocktailFull (id={cocktail_id}) deleted successfully'}
 
 
 # UPDATE requests

@@ -28,7 +28,7 @@ class Ingredient(BaseModel):
         orm_mode = True
 
 
-class Cocktail(BaseModel):
+class CocktailBase(BaseModel):
 
     name: str
     glass: Glass
@@ -38,4 +38,17 @@ class Cocktail(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class CocktailFull(CocktailBase):
+
+    id: int
+
+    class Config:
+        orm_mode = True
+
+
+class CocktailShort(BaseModel):
+    id: int
+    name: str
 
